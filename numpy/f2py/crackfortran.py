@@ -1190,7 +1190,11 @@ def analyzeline(m, case, line):
         if last_name is not None:
             previous_context = ('variable', last_name, groupcounter)
     elif case == 'moduleprocedure':
-        groupcache[groupcounter]['implementedby'] = [x.strip() for x in m.group('after').split(',')]
+        ifaces = [x.strip() for x in m.group('after').split(',')]
+        if 'implementedby' in groupcache[groupcounter]:
+            groupcache[groupcounter]['implementedby'] += ifaces
+        else:
+            groupcache[groupcounter]['implementedby'] = ifaces
     elif case == 'parameter':
         edecl = groupcache[groupcounter]['vars']
         ll = m.group('after').strip()[1:-1]
@@ -2327,7 +2331,7 @@ def getarrlen(dl, args, star='*'):
                 d = '%s%s+%s' % (c2, c1, b)
     return d, None, None
 
-word_pattern = re.compile(r'\b[a-z][\w$]*\b', re.I)
+word_pattern = re.compile(r'[^\'"]\b[a-z][\w$]*\b', re.I)
 
 
 def _get_depend_dict(name, vars, deps):
